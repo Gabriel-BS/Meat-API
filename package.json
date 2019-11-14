@@ -2,9 +2,10 @@
   "name": "meat-api",
   "version": "1.0.0",
   "description": "An Restful API project using mongodb, NodeJS and Restify",
-  "main": "index.js",
+  "main": "main.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "nodemon": "node ./node_modules/nodemon/bin/nodemon.js ./dist/main.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,8 @@
     "restify": "^8.4.0"
   },
   "devDependencies": {
-    "@types/restify": "^8.4.1"
+    "@types/restify": "^8.4.1",
+    "nodemon": "^1.19.4",
+    "typescript": "^3.7.2"
   }
 }
