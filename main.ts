@@ -1,7 +1,9 @@
 import { Server } from "./server/server";
+import { usersRouter } from "./users/users.router";
+
 
 const server = new Server()
-server.boostrap().then(server => {
+server.boostrap([usersRouter]).then(server => {
     console.log('Server is listeling on', server.application.address())
 }).catch((error => {
     console.log('Server failed to start')
