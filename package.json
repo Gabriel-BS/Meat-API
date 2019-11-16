@@ -19,11 +19,14 @@
   },
   "homepage": "https://github.com/Gabriel-BS/Meat-API#readme",
   "dependencies": {
+    "mongoose": "^5.7.11",
     "restify": "^8.4.0"
   },
   "devDependencies": {
+    "@types/mongoose": "^5.5.31",
     "@types/restify": "^8.4.1",
     "nodemon": "^1.19.4",
+    "prettier": "^1.19.1",
     "typescript": "^3.7.2"
   }
 }
