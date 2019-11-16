@@ -3,63 +3,55 @@ import { Router } from "../common/router";
 import { User } from "../users/users.model";
 
 class UsersRouter extends Router {
-    applyRoutes(application: restify.Server){
-        application.get('/users', (req, resp, next) => { //route that utilizes the findAll function
-            User.findAll().then(users => {
-                resp.json(users)
-                return next()
-            })
+  applyRoutes(application: restify.Server) {
+    application.get("/users", (req, resp, next) => {
+      User.find().then(user => this.render(user, resp, next));
+    }); // retrieve all documents from that collection
+
+    application.get("/users/:id", (req, resp, next) => {
+      User.findById(req.params.id).then(user => this.render(user, resp, next));
+    }); // retrieve a single document by its id
+
+    application.post("/users", (req, resp, next) => {
+      let user = new User(req.body);
+      user.save().then(user => this.render(user, resp, next));
+    }); // create a new document
+
+    application.put("/users/:id", (req, resp, next) => {
+      const options = { overwrite: true };
+      User.updateOne({ _id: req.params.id }, req.body, options)
+        .exec()
+        .then(result => {
+          if (result.n) {
+            return User.findById(req.params.id);
+          } else {
+            resp.send(404);
+          }
         })
+        .then(user => this.render(user, resp, next));
+    }); // replace a document
 
-        application.get('/users/:id', (req, resp, next) => {
-            User.findById(req.params.id).then(user => { //route that utilizes the findById function
-                if(user){
-                    resp.json(user)
-                    return next()
-                }
-                resp.send(404)
-                return next()
-            })
-        })
-    }
-}
+    application.patch("/users/:id", (req, resp, next) => {
+      const options = { new: true };
+      User.findOneAndUpdate(req.params.id, req.body, options).then(user =>
+        this.render(user, resp, next)
+      ); // updates a document
 
+      application.del("/users/:id", (req, resp, next) => {
+        User.deleteOne({ _id: req.params.id })
+          .exec()
+          .then(result => {
+            if (result.n) {
+              resp.send(204);
+              return next();
+            } else {
+              resp.send(404);
+              return next();
+            }
+          });
+      });
+    });
+  }
+} // delete  a document
 
-export const usersRouter = new UsersRouter()
-
-
-
-        // /**
-        //  * @param resp
-        //  * it represents the response and the information it carries with itself like
-        //  * contentType
-        //  *
-        //  * @param req
-        //  * it represents the requisiton and the information of that requisiton, method used,
-        //  * parameters of it is an GET method for example
-        //  *
-        //  * @param next
-        //  * Calling next() will move to the next function in the chain.
-        //  * if you need to stop processing some request you can use return next(false)
-        //  */
-
-        // this.application.get("/info", [
-        //     (req, resp, next) => {
-        //       if (req.userAgent().includes("Mozilla /5.0")) {
-        //         resp.json({ message: "you are using Mozilla" });
-        //         return next(false);
-        //       }
-        //       return next();
-        //     },
-        //     (req, resp, next) => {
-        //       resp.json({
-        //         browser: req.userAgent(),
-        //         method: req.method,
-        //         url: req.href(),
-        //         path: req.path(),
-        //         query: req.query
-        //       });
-        //       return next();
-        //     }
-        //   ]);
-  
+export const usersRouter = new UsersRouter();
