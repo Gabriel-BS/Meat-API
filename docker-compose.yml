@@ -1,0 +1,16 @@
+version: '2.1'
+
+services:
+  meat-api:
+    build: .
+    image: meat-api
+    ports:
+      - '3000:3000'
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example 
+
