@@ -1,5 +1,4 @@
 import * as restify from "restify";
-import { EventEmitter } from "events";
 import { UserDocument } from "../users/users.model";
 
 export class Router {
@@ -7,12 +6,14 @@ export class Router {
     return application;
   }
 
-  render(doc: UserDocument | UserDocument[] | null | undefined, response: restify.Response, next: restify.Next) {
-      if (doc) {
+  render(response: restify.Response, next: restify.Next) {
+    return (document: UserDocument | UserDocument[] | null | undefined) => {
+      if (document) {
         response.json(document);
       } else {
         response.send(404);
       }
       return next;
     };
+  }
 }
