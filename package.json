@@ -2,7 +2,7 @@
   "name": "meat-api",
   "version": "1.0.0",
   "description": "An Restful API project using mongodb, NodeJS and Restify",
-  "main": "main.ts",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "nodemon": "node ./node_modules/nodemon/bin/nodemon.js ./dist/main.js",
@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@types/mongoose": "^5.5.31",
+    "@types/node": "^12.12.9",
     "@types/restify": "^8.4.1",
     "nodemon": "^1.19.4",
     "prettier": "^1.19.1",

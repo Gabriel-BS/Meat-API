@@ -8,10 +8,12 @@ export class Server {
 
   initializeDb(): Promise<Mongoose> {
     return connect(environment.db.url, {
+      auth: {password: environment.auth.password, user: environment.auth.username},
+      dbName: environment.db.name,
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
-      useFindAndModify: false
+      useFindAndModify: false,
     });
   }
 

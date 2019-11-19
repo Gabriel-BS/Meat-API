@@ -19,4 +19,4 @@ RUN npm run build
 ENV SERVER_PORT=3000
 EXPOSE ${SERVER_PORT}
 
-CMD [ "node", ".\dist\main.js" ]
+CMD [ "node", "." ]

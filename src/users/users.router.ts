@@ -1,6 +1,6 @@
 import * as restify from "restify";
 import { Router } from "../common/router";
-import { User } from "../users/users.model";
+import { User } from "./users.model";
 
 class UsersRouter extends Router {
   applyRoutes(application: restify.Server) {
