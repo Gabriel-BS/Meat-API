@@ -4,7 +4,7 @@ import * as bcrypt from "bcrypt";
 import { environment } from "../common/environment";
 import * as restify from "restify";
 
-export interface UserDocument extends mongoose.Document {
+export interface UserInterface extends mongoose.Document {
   name: string;
   email: string;
   password: string;
@@ -74,4 +74,4 @@ userSchema.pre("save", saveMiddleware);
 userSchema.pre("findOneAndUpdate", updateMiddleware);
 userSchema.pre("update", updateMiddleware);
 
-export const User = mongoose.model<UserDocument>("User", userSchema);
+export const User = mongoose.model<UserInterface>("User", userSchema);
