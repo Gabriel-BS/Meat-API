@@ -2,6 +2,7 @@ import * as restify from "restify";
 import { environment } from "../common/environment";
 import { Router } from "../common/router";
 import { connect, Mongoose } from "mongoose";
+import { handleError } from "./error.handler";
 
 export class Server {
   application!: restify.Server;
@@ -35,7 +36,7 @@ export class Server {
           resolve(this.application);
         });
 
-        // this.application.on('restiftError', )
+        this.application.on('restifyError', handleError)
       } catch (error) {
         reject(error);
       }

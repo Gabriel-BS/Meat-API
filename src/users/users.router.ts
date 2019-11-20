@@ -1,8 +1,16 @@
 import * as restify from "restify";
 import { Router } from "../common/router";
+import { NotFoundError } from "restify-errors";
 import { User } from "./users.model";
 
 class UsersRouter extends Router {
+  constructor() {
+    super();
+    this.on("beforeRender", document => {
+      document.password = undefined;
+    });
+  }
+
   applyRoutes(application: restify.Server) {
     application.get("/users", (req, resp, next) => {
       User.find()
@@ -25,14 +33,14 @@ class UsersRouter extends Router {
     }); // create a new document
 
     application.put("/users/:id", (req, resp, next) => {
-      const options = { overwrite: true };
+      const options = { runValidators: true, overwrite: true };
       User.updateOne({ _id: req.params.id }, req.body, options)
         .exec()
         .then(result => {
           if (result.n) {
             return User.findById(req.params.id);
           } else {
-            resp.send(404);
+            throw new NotFoundError("Document not found");
           }
         })
         .then(this.render(resp, next))
@@ -40,27 +48,28 @@ class UsersRouter extends Router {
     }); // replace a document
 
     application.patch("/users/:id", (req, resp, next) => {
-      const options = { new: true };
-      User.findOneAndUpdate(req.params.id, req.body, options).then(
-        this.render(resp, next)
-      ); // updates a document
+      const options = { runValidators: true, new: true };
+      User.findOneAndUpdate(req.params.id, req.body, options)
+        .then(this.render(resp, next))
+        .catch(next);
+    }); // updates a document
 
-      application.del("/users/:id", (req, resp, next) => {
-        User.deleteOne({ _id: req.params.id })
-          .exec()
-          .then(result => {
-            if (result.n) {
-              resp.send(204);
-              return next();
-            } else {
-              resp.send(404);
-              return next();
-            }
-          })
-          .catch(next);
-      });
+    application.del("/users/:id", (req, resp, next) => {
+      User.deleteOne({ _id: req.params.id })
+        .exec()
+        .then(result => {
+          if (result.n) {
+            resp.send(204);
+            return next();
+          } else {
+            throw new NotFoundError("Document not found");
+            return next();
+          }
+        })
+        .catch(next);
     });
+    // delete  a document
   }
-} // delete  a document
+}
 
 export const usersRouter = new UsersRouter();
