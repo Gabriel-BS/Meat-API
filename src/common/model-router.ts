@@ -3,10 +3,15 @@ import * as mongoose from "mongoose";
 import * as restify from "restify";
 import { NotFoundError } from "restify-errors";
 import { ObjectId } from "bson";
+import { parse } from "path";
 
 export abstract class ModelRouter<T extends mongoose.Document> extends Router {
+  basePath: string
+  pageSize: number = 4
+
   constructor(protected model: mongoose.Model<T>) {
     super();
+    this.basePath = `/${model.collection.name}`
   }
 
   findAll = (
@@ -14,9 +19,13 @@ export abstract class ModelRouter<T extends mongoose.Document> extends Router {
     resp: restify.Response,
     next: restify.Next
   ) => {
-    this.model
-      .find()
-      .then(this.renderAll(resp, next))
+    let page = parseInt(req.query._page || 1) 
+    page = page > 0 ? page: 1
+    const skip = (page - 1) * this.pageSize
+    this.model.countDocuments({}).exec().then(count => 
+       this.model
+      .find().limit(this.pageSize).skip(skip)
+      .then(this.renderAll(resp, next, {page, count, pageSize: this.pageSize, url: req.url})))
       .catch(next);
   }; // retrieve all documents from that collection
 
@@ -25,8 +34,7 @@ export abstract class ModelRouter<T extends mongoose.Document> extends Router {
     resp: restify.Response,
     next: restify.Next
   ) => {
-    this.model
-      .findById(req.params.id)
+    this.prepareOne(this.model.findById(req.params.id))
       .then(this.renderAll(resp, next))
       .catch(next);
   }; // retrieve a single document by its id
@@ -94,19 +102,50 @@ export abstract class ModelRouter<T extends mongoose.Document> extends Router {
       .catch(next);
   }; // delete  a document
 
-  renderAll(resp: restify.Response, next: restify.Next){
-    return (documents: any) => {
-      if (Array.isArray(documents)) {
-        documents.map((document) => {
-          this.emit("beforeRender", document);
-        });
-        resp.json(documents);
-      } else if(documents) {
-        this.emit("beforeRender", documents);
-        resp.json(documents);
-      } else {
-        resp.json([]);
+  protected prepareOne(query: mongoose.DocumentQuery<T | null, T, {}>): mongoose.DocumentQuery<T | null, T, {}> {
+    return query
+  }
+
+  envelope(document: any): any {
+    let resource = Object.assign({_links:{}}, document.toJSON())
+    resource._links.self = `${this.basePath}/${resource._id}`
+    return resource
+  }
+
+  envelopeAll(documents: any[], options: any = {}): any{
+    const resource: any = {
+      _links: {
+        self: `${options.url}`
+      },
+      items: documents
+    }
+    if (options.page && options.count && options.pageSize){
+      if(options.page > 1){
+        resource._links.previous = `${this.basePath}?_page=${options.page-1}`
       }
+      const remaining = options.count - (options.page * options.pageSize)
+      if(remaining > 0){
+        resource._links.next = `${this.basePath}?_page=${options.page+1}`
+      }
+    }
+    return resource
+  }
+
+  renderAll(resp: restify.Response, next: restify.Next, options: any = {}){
+    return (documents: T | T[] | null) => {
+      if (Array.isArray(documents)) {
+        documents.map((document, index, array) => {
+          this.emit("beforeRender", document)
+          array[index] = this.envelope(document)
+        });
+        resp.json(this.envelopeAll(documents, options));
+      } else if(documents) {
+        this.emit("beforeRender", documents); 
+        resp.json(this.envelope(documents));
+       } else if(!documents){
+         throw new NotFoundError('Document not found')
+       }
+       return next()
     };
   };
 
@@ -116,9 +155,9 @@ export abstract class ModelRouter<T extends mongoose.Document> extends Router {
     next: restify.Next
   ) => {
     if (!ObjectId.isValid(req.params.id)) {
-      next(new NotFoundError("Document not found"));
+     next(new NotFoundError("Document not found"));
     } else {
-      next();
+     next();
     }
   };
 }
