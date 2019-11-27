@@ -57,7 +57,7 @@ export abstract class ModelRouter<T extends mongoose.Document> extends Router {
   ) => {
     const options = { runValidators: true, overwrite: true };
     this.model
-      .updateOne({ _id: req.params.id }, req.body, options)
+      .replaceOne({ _id: req.params.id }, req.body)
       .exec()
       .then(result => {
         if (result.n) {

@@ -1,12 +1,7 @@
 import 'jest'
 import * as request from 'supertest'
-import { environment } from "../common/environment";
-import { Server } from "../server/server";
-import { usersRouter } from "../users/users.router";
-import { User } from "../users/users.model";
 
 let address: string  = (<any>global).adress
-
 
 test('GET /users', () => {
     return request(address)
@@ -59,5 +54,41 @@ test('PATCH /user/:id', () => {
     .then(res => {
         expect(res.body.name).toBe('usuario2 - patch')
     })
+    }).catch(fail)
+})
+
+
+test('PUT /user/:id', () => {
+    return request(address)
+    .post('/users')
+    .send({
+        name: 'usuario6',
+        email: 'usuario6@email.com',
+        password: '123543'
+    })
+    .then(res => {
+       return request(address)
+        .put(`/users/${res.body._id}`)
+        .send({
+            name: 'usuario6 - PUT'
+        })
+    .then(res => {
+        expect(res.body.name).toContain('usuario6 - PUT')
+    })
+    }).catch(fail)
+})
+
+
+test('DELETE /user/:id', () => {
+    return request(address)
+    .post('/users')
+    .send({
+        name: 'usuario4',
+        email: 'usuario4@email.com',
+        password: 'dasdadsa'
+    }).then(res => {
+        request(address).delete(`/users/${res.body._id}`).then(res => {
+            expect(res.status).toBe(204)
+        })
     }).catch(fail)
 })

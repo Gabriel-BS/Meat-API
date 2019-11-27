@@ -30,6 +30,7 @@ export const handleError = (
         messages.push({message: err.errors[name].message})
       }
       err.toJSON = () => ({
+        messages: 'Validation error while processing your request',
         errors: messages
       })
       break;

@@ -7,8 +7,7 @@ import { usersRouter } from "./src/users/users.router";
 import { User } from "./src/users/users.model";
 import { Review } from "./src/reviews/reviews.model";
 import { reviewRouter } from "./src/reviews/reviews.router";
-
-
+import { restaurantRouter } from "./src/restaurants/restaurants.router";
 
 let server: Server;
 let address: string;
@@ -19,7 +18,7 @@ const beforeAllTests = () => {
   address = `http://localhost:${environment.server.port}`;
   server = new Server();
   return server
-    .boostrap([usersRouter, reviewRouter])
+    .boostrap([usersRouter, reviewRouter, restaurantRouter])
     .then(() => User.deleteMany({}).exec())
     .then(() => Review.deleteMany({}).exec())
     .catch(console.error);

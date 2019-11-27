@@ -1,6 +1,7 @@
 import * as restify from "restify";
 import { User, UserInterface } from "./users.model";
 import { ModelRouter } from "../common/model-router";
+import { authenticate } from "../security/auth.handler";
 
 class UsersRouter extends ModelRouter<UserInterface> {
   constructor() {
@@ -17,7 +18,10 @@ class UsersRouter extends ModelRouter<UserInterface> {
   ) => {
     if (req.query.email) {
       User.findByEmail(req.query.email)
-          .then(this.renderAll(resp, next))
+          .then(this.renderAll(resp, next, {
+            pageSize: this.pageSize,
+            url: req.url
+          }))
           .catch(next)
     }else{
       next()
@@ -36,6 +40,8 @@ class UsersRouter extends ModelRouter<UserInterface> {
     application.patch(`${this.basePath}/:id`, [this.validateId, this.updateOne]); // updates a document
 
     application.del(`${this.basePath}/:id`, [this.validateId, this.deleteOne]); // delete  a document
+
+    application.post(`${this.basePath}/auth`, authenticate)
   }
 }
 

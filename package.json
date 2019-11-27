@@ -16,7 +16,7 @@
   "author": "",
   "license": "ISC",
   "jest": {
-    "globals":{
+    "globals": {
       "adress": "http://localhost:3001"
     },
     "preset": "ts-jest",
@@ -28,6 +28,7 @@
   "homepage": "https://github.com/Gabriel-BS/Meat-API#readme",
   "dependencies": {
     "bcrypt": "^3.0.7",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.7.11",
     "restify": "^8.4.0",
     "restify-errors": "8.0.1"
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
     "@types/jest": "^24.0.23",
+    "@types/jsonwebtoken": "^8.3.5",
     "@types/mongoose": "^5.5.31",
     "@types/node": "^12.12.9",
     "@types/restify": "^8.4.1",
