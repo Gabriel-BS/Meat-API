@@ -12,7 +12,6 @@ export const handleError = (
   err: any,
   done: any
 ) => {
-  console.log(err)
   err.toJSON = () => {
     return {
       message: err.message

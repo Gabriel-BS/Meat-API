@@ -1,7 +1,7 @@
 import * as restify from "restify";
 import { environment } from "../common/environment";
 import { Router } from "../common/router";
-import { connect, Mongoose } from "mongoose";
+import { connect, Mongoose, disconnect } from "mongoose";
 import { handleError } from "./error.handler";
 
 export class Server {
@@ -47,5 +47,9 @@ export class Server {
     return this.initializeDb().then(() =>
       this.initRoutes(routers).then(() => this)
     );
+  }
+
+  shutdown(){
+    return disconnect().then(() => this.application.close())
   }
 }
