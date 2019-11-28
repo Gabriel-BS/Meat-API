@@ -2,10 +2,13 @@ import 'jest'
 import * as request from 'supertest'
 
 let address: string  = (<any>global).adress
+let auth: string  = (<any>global).auth
+
 
 test('GET /users', () => {
     return request(address)
     .get('/users')
+    .set('Authorization', auth)
     .then(res => {
         expect(res.status).toBe(200)
         expect(res.body.items).toBeInstanceOf(Array)
@@ -15,6 +18,7 @@ test('GET /users', () => {
 test('POST /users', () => {
     return request(address)
     .post('/users')
+    .set('Authorization', auth)
     .send({
         name: 'usuario1',
         email: 'usuario1@email.com',
@@ -32,6 +36,7 @@ test('POST /users', () => {
 test('GET /users/aaaaa - not found', () => {
     return request(address)
     .get('/users/aaaaa')
+    .set('Authorization', auth)
     .then(res => {
         expect(res.status).toBe(404)
     }).catch(fail)
@@ -40,6 +45,7 @@ test('GET /users/aaaaa - not found', () => {
 test('PATCH /user/:id', () => {
     return request(address)
     .post('/users')
+    .set('Authorization', auth)
     .send({
         name: 'usuario2',
         email: 'usuario2@email.com',
@@ -48,6 +54,7 @@ test('PATCH /user/:id', () => {
     .then(res => {
        return request(address)
         .patch(`/users/${res.body._id}`)
+        .set('Authorization', auth)
         .send({
             name: 'usuario2 - patch'
         })
@@ -61,6 +68,7 @@ test('PATCH /user/:id', () => {
 test('PUT /user/:id', () => {
     return request(address)
     .post('/users')
+    .set('Authorization', auth)
     .send({
         name: 'usuario6',
         email: 'usuario6@email.com',
@@ -69,6 +77,7 @@ test('PUT /user/:id', () => {
     .then(res => {
        return request(address)
         .put(`/users/${res.body._id}`)
+        .set('Authorization', auth)
         .send({
             name: 'usuario6 - PUT'
         })
@@ -82,12 +91,15 @@ test('PUT /user/:id', () => {
 test('DELETE /user/:id', () => {
     return request(address)
     .post('/users')
+    .set('Authorization', auth)
     .send({
         name: 'usuario4',
         email: 'usuario4@email.com',
         password: 'dasdadsa'
     }).then(res => {
-        request(address).delete(`/users/${res.body._id}`).then(res => {
+        request(address).delete(`/users/${res.body._id}`)
+        .set('Authorization', auth)
+        .then(res => {
             expect(res.status).toBe(204)
         })
     }).catch(fail)

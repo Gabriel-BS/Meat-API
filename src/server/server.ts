@@ -3,6 +3,8 @@ import { environment } from "../common/environment";
 import { Router } from "../common/router";
 import { connect, Mongoose, disconnect } from "mongoose";
 import { handleError } from "./error.handler";
+import { tokenParser } from "./../security/token.parser";
+import * as fs from 'fs'
 
 export class Server {
   application!: restify.Server;
@@ -17,16 +19,24 @@ export class Server {
       useFindAndModify: false,
     });
   }
+ 
 
   initRoutes(routers: Router[]): Promise<any> {
     return new Promise((resolve, reject) => {
       try {
-        this.application = restify.createServer({
+        const options: restify.ServerOptions = {
           name: "meat-api",
-          version: "1.0.0"
-        });
+          version: "1.0.0",
+        }
+        if(environment.security.enableHTTPS){
+          options.certificate = fs.readFileSync(environment.security.certificate)
+          options.key = fs.readFileSync(environment.security.key)
+        }
+
+        this.application = restify.createServer(options);
         this.application.use(restify.plugins.queryParser());
         this.application.use(restify.plugins.bodyParser());
+        this.application.use(tokenParser)
 
         for (let router of routers) {
           router.applyRoutes(this.application); //apply routes for the current running application

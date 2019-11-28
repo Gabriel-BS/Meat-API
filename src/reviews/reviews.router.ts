@@ -2,6 +2,7 @@ import { ReviewInterface, Review } from "./reviews.model";
 import { ModelRouter } from "../common/model-router";
 import * as restify from "restify";
 import * as mongoose from "mongoose";
+import { authorize } from "../security/authz.handler";
 
 class ReviewRouter extends ModelRouter<ReviewInterface> {
   constructor() {
@@ -26,7 +27,7 @@ class ReviewRouter extends ModelRouter<ReviewInterface> {
 
     application.get(`${this.basePath}/:id`, [this.validateId, this.findById]); // retrieve a single document by its id
 
-    application.post(`${this.basePath}`, this.createOne); // create a new document
+    application.post(`${this.basePath}`, [authorize('user'), this.createOne]); // create a new document
   }
 }
 

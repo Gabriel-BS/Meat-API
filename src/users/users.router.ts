@@ -2,6 +2,8 @@ import * as restify from "restify";
 import { User, UserInterface } from "./users.model";
 import { ModelRouter } from "../common/model-router";
 import { authenticate } from "../security/auth.handler";
+import { authorize } from "../security/authz.handler";
+
 
 class UsersRouter extends ModelRouter<UserInterface> {
   constructor() {
@@ -29,17 +31,17 @@ class UsersRouter extends ModelRouter<UserInterface> {
   };
 
   applyRoutes(application: restify.Server) {
-    application.get(`${this.basePath}`, [this.findByEmail, this.findAll]); // retrieve all documents from that collection
+    application.get(`${this.basePath}`, [authorize('admin'), this.findByEmail, this.findAll]); // retrieve all documents from that collection
 
-    application.get(`${this.basePath}/:id`, [this.validateId, this.findById]); // retrieve a single document by its id
+    application.get(`${this.basePath}/:id`, [authorize('admin'),this.validateId, this.findById]); // retrieve a single document by its id
 
-    application.post(`${this.basePath}`, this.createOne); // create a new document
+    application.post(`${this.basePath}`, [authorize('admin'),this.createOne]); // create a new document
 
-    application.put(`${this.basePath}/:id`, [this.validateId, this.replaceOne]); // replace a document
+    application.put(`${this.basePath}/:id`, [authorize('admin'),this.validateId, this.replaceOne]); // replace a document
 
-    application.patch(`${this.basePath}/:id`, [this.validateId, this.updateOne]); // updates a document
+    application.patch(`${this.basePath}/:id`, [authorize('admin'),this.validateId, this.updateOne]); // updates a document
 
-    application.del(`${this.basePath}/:id`, [this.validateId, this.deleteOne]); // delete  a document
+    application.del(`${this.basePath}/:id`, [authorize('admin'),this.validateId, this.deleteOne]); // delete  a document
 
     application.post(`${this.basePath}/auth`, authenticate)
   }
