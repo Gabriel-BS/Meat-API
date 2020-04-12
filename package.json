@@ -32,7 +32,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.7",
     "restify": "^8.5.1",
-    "restify-errors": "8.0.1"
+    "restify-errors": "8.0.1",
+    "acorn": "^5.7.4"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
