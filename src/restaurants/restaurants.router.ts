@@ -2,6 +2,7 @@ import { RestaurantInterface, Restaurant } from "./restaurants.model";
 import { ModelRouter } from "../common/model-router";
 import * as restify from "restify";
 import { NotFoundError } from "restify-errors";
+import { authorize } from "../security/authz.handler";
 
 class RestaurantRouter extends ModelRouter<RestaurantInterface> {
     constructor(){
@@ -40,21 +41,21 @@ class RestaurantRouter extends ModelRouter<RestaurantInterface> {
 
   applyRoutes(application: restify.Server) {
 
-    application.get("/restaurants", this.findAll) // retrieve all documents from that collection
+    application.get("/restaurants", [authorize('admin'), this.findAll]) // retrieve all documents from that collection
 
     application.get(`${this.basePath}/:id`, [this.validateId, this.findById]) // retrieve a single document by its id
 
-    application.post("/restaurants", this.createOne) // create a new document
+    application.post("/restaurants", [authorize('admin'),this.createOne]) // create a new document
 
-    application.put(`${this.basePath}/:id`, [this.validateId, this.replaceOne]) // replace a document
+    application.put(`${this.basePath}/:id`, [authorize('admin'),this.validateId, this.replaceOne]) // replace a document
 
-    application.patch(`${this.basePath}/:id`, [this.validateId, this.updateOne]) // updates a document
+    application.patch(`${this.basePath}/:id`, [authorize('admin'),this.validateId, this.updateOne]) // updates a document
 
-    application.del(`${this.basePath}/:id`, [this.validateId, this.deleteOne]) // delete  a document
+    application.del(`${this.basePath}/:id`, [authorize('admin'),this.validateId, this.deleteOne]) // delete  a document
 
-    application.get(`${this.basePath}/:id/menu`, this.validateId, this.findMenu )
+    application.get(`${this.basePath}/:id/menu`,this.validateId, this.findMenu)
 
-    application.put(`${this.basePath}/:id/menu`, this.validateId, this.replaceMenu )
+    application.put(`${this.basePath}/:id/menu`, [authorize('admin'),this.validateId, this.replaceMenu] )
 
   }
 }
