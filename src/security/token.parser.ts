@@ -12,7 +12,7 @@ declare module 'restify' {
 export const tokenParser: restify.RequestHandler = (req, res, next) => {
   const token = extractToken(req);
   if (token) {
-    jwt.verify(token, environment.security.apiSecret, applyBearer(req, next));
+    jwt.verify(token, environment.security.apiSecret);
   } else {
     next();
   }

@@ -44,6 +44,8 @@ class UsersRouter extends ModelRouter<UserInterface> {
     application.del(`${this.basePath}/:id`, [authorize('admin'),this.validateId, this.deleteOne]); // delete  a document
 
     application.post(`${this.basePath}/auth`, authenticate)
+
+    application.post(`${this.basePath}/create/account`, this.createOne)
   }
 }
 

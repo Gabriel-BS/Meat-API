@@ -41,7 +41,7 @@ class RestaurantRouter extends ModelRouter<RestaurantInterface> {
 
   applyRoutes(application: restify.Server) {
 
-    application.get("/restaurants", this.findAll) // retrieve all documents from that collection
+    application.get("/restaurants", [authorize('admin'), this.findAll]) // retrieve all documents from that collection
 
     application.get(`${this.basePath}/:id`, [this.validateId, this.findById]) // retrieve a single document by its id
 
