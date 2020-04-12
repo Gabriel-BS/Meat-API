@@ -1,2 +1,2 @@
 # Meat-API
-An Restful API project using mongodb, NodeJS and Restify
+A Restful API project using mongodb, NodeJS and Restify
