@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/Gabriel-BS/Meat-API#readme",
   "dependencies": {
-    "bcrypt": "^3.0.8",
+    "bcrypt": "^5.0.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.7",
     "restify": "^8.5.1",
